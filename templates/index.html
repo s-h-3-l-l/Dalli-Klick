@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Dalli-Klick</title>
+        <script src="/static/OCanvas.js"></script>
+        <script src="/static/main.js"></script>
+        <link rel="stylesheet" href="/static/style.css"/>
+        <script>
+            window.dalli_cfg = {
+                img: "{{url_for('custom_static', filename=img)}}"
+            };
+        </script>
+        <style>
+            body {
+                background-image: url("/static/bg.jpg");
+                background-repeat: repeat;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="container">
+            <canvas id="canvas"></canvas>
+            <div id="toolbar">
+                <form method="get" action="/">
+                    <input type="hidden" name="image" value="{{pageno}}"/>
+                    <input type="submit" id="btn-next" value="N&auml;chstes Bild"/>
+                </form>
+                <button id="btn-hint">Freilegen</button>
+                <button id="btn-sol">L&ouml;sen</button>
+            </div>
+        </div>
+    </body>
+</html>

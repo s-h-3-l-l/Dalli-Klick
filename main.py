@@ -2,6 +2,7 @@
 
 import sys
 import os
+import json
 
 from flask import Flask, render_template, request, send_from_directory
 
@@ -16,10 +17,14 @@ def custom_static(filename):
 def index():
     global files
     idx = int(request.args.get("image", 0))
-    if idx >= 0 and idx < len(files):
-        return render_template("index.html", img=files[idx], pageno=idx + 1)
-    else:
-        return render_template("ende.html")
+    if idx >= len(files):
+        idx = len(files) - 1
+    if idx < 0:
+        idx = 0
+    pageno = None
+    if idx >= 0 and idx < len(files) - 1:
+        pageno = idx + 1
+    return render_template("index.html", img=files[idx], pageno=json.dumps(pageno))
 
 def main():
     global files

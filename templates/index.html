@@ -7,8 +7,15 @@
         <link rel="stylesheet" href="/static/style.css"/>
         <script>
             window.dalli_cfg = {
-                img: "{{url_for('custom_static', filename=img)}}"
+                img: "{{url_for('custom_static', filename=img)}}",
+                next: {{pageno}},
             };
+            
+            document.addEventListener("DOMContentLoaded", function () {
+                if (window.dalli_cfg.next === null) {
+                    document.getElementById("btn-next").disabled = true;
+                }
+            });
         </script>
         <style>
             body {
@@ -22,7 +29,7 @@
             <canvas id="canvas"></canvas>
             <div id="toolbar">
                 <form method="get" action="/">
-                    <input type="hidden" name="image" value="{{pageno}}"/>
+                    <input type="hidden" id="next-image" name="image" value="{{ pageno }}"/>
                     <input type="submit" id="btn-next" value="N&auml;chstes Bild"/>
                 </form>
                 <button id="btn-hint">Freilegen</button>

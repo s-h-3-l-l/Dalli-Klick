@@ -30,8 +30,9 @@ def main():
     
     app.config["CUSTOM_STATIC_PATH"] = sys.argv[1]
     
-    for filename in os.listdir(sys.argv[1]):
-        files.append(filename)
+    for filename in sorted(os.listdir(sys.argv[1])):
+        if os.path.isfile(os.path.join(sys.argv[1], filename)):
+            files.append(filename)
     
     app.run()
 

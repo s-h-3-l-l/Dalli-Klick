@@ -11,12 +11,7 @@ document.addEventListener("DOMContentLoaded", function() {
         const elem = document.getElementById("canvas");
         elem.width = img.naturalWidth;
         elem.height = img.naturalHeight;
-        const num_tiles = 15;
-        const bounds = elem.getBoundingClientRect();
-        const tile_width = Math.sqrt((bounds.width * bounds.height) / num_tiles);
-        const cols = Math.ceil(elem.width / tile_width);
-        const rows = Math.ceil(elem.height / tile_width);
-        let num_cells = cols * rows;
+        let num_tiles = 15;
         
         elem.classList.add("hide");
         const canvas = oCanvas.create({
@@ -31,39 +26,49 @@ document.addEventListener("DOMContentLoaded", function() {
         
         canvas.addChild(c_img, false);
         
-        for (let j = 0; j < rows; ++j) {
-            for (let i = 0; i < cols; ++i) {
-                canvas.addChild(canvas.display.polygon({
-                    x: (tile_width / 2) + i * tile_width,
-                    y: tile_width / 2 + j * tile_width,
-                    sides: 4,
-                    rotation: 45,
-                    side: tile_width,
-                    fill: random_color()
-                }), false);
-            }
+        const radius = Math.max(canvas.width, canvas.height);
+        
+        const prototype = canvas.display.arc({
+            x: canvas.width / 2,
+            y: canvas.height / 2,
+            radius: radius,
+            pieSection: true
+        });
+        
+        let end, lastEnd;
+        for (let i = 0; i < num_tiles; ++i) {
+            end = (i > 0 ? lastEnd : 0) + 360 / num_tiles - (i < 1 ? 90 : 0);
+            
+            const elem = prototype.clone({
+                start: (i < 1 ? -90 : lastEnd),
+                end: end,
+                fill: random_color(),
+            });
+            canvas.addChild(elem);
+            
+            lastEnd = end;
         }
         
         canvas.redraw();
         elem.classList.remove("hide");
         
         document.getElementById("btn-hint").addEventListener("click", function() {
-            if (num_cells > 0) {
-                const rand_idx = 1 + Math.floor(Math.random() * num_cells);
+            if (num_tiles > 0) {
+                const rand_idx = 1 + Math.floor(Math.random() * num_tiles);
                 canvas.removeChildAt(rand_idx, true);
-                num_cells -= 1;
+                num_tiles -= 1;
                 
-                if (num_cells === 0) {
+                if (num_tiles === 0) {
                     document.getElementById("btn-hint").disabled = true;
                     document.getElementById("btn-sol").disabled = true;
                 }
             }
         });
         document.getElementById("btn-sol").addEventListener("click", function(){
-            for (let i = 0; i < num_cells; ++i) {
+            for (let i = 0; i < num_tiles; ++i) {
                 canvas.removeChildAt(1, false);
             }
-            num_cells = 0;
+            num_tiles = 0;
             canvas.redraw();
             document.getElementById("btn-hint").disabled = true;
             document.getElementById("btn-sol").disabled = true;

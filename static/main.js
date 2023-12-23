@@ -71,14 +71,14 @@ document.addEventListener("DOMContentLoaded", function() {
         
         document.getElementById("btn-hint").addEventListener("click", function() {
             if (num_tiles > 0) {
+                // clear all points
+                for (let j = 0; j < num_points; ++j) {
+                    canvas.removeChildAt(1 + num_tiles + num_points - j - 1, false);
+                }
+                
                 const rand_idx = 1 + Math.floor(Math.random() * num_tiles);
                 canvas.removeChildAt(rand_idx, false);
                 num_tiles -= 1;
-                
-                // clear all points
-                for (let j = 0; j < num_points; ++j) {
-                    canvas.removeChildAt(1 + num_tiles, false);
-                }
                 
                 if (num_tiles === 0) {
                     document.getElementById("btn-hint").disabled = true;

@@ -11,12 +11,27 @@ document.addEventListener("DOMContentLoaded", function() {
         const elem = document.getElementById("canvas");
         elem.width = img.naturalWidth;
         elem.height = img.naturalHeight;
-        let num_tiles = 15;
+        let num_tiles = 20 + Math.floor(Math.random() * 5);
         
         elem.classList.add("hide");
         const canvas = oCanvas.create({
             canvas: "#canvas"
         });
+        const radius = Math.max(canvas.width, canvas.height);
+        const point_radius = Math.max(radius / 50, 1);
+        let num_points = Math.min((canvas.width * canvas.height / 3) / (point_radius * 2 * 2), 50);
+        
+        const spawn_random_point = function () {
+            const x = Math.random() * canvas.width;
+            const y = Math.random() * canvas.height;
+            const point = canvas.display.ellipse({
+                x: x,
+                y: y,
+                radius: point_radius,
+                fill: random_color(),
+            });
+            canvas.addChild(point);
+        };
         
         const c_img = canvas.display.image({
             x: 0,
@@ -25,8 +40,6 @@ document.addEventListener("DOMContentLoaded", function() {
         });
         
         canvas.addChild(c_img, false);
-        
-        const radius = Math.max(canvas.width, canvas.height);
         
         const prototype = canvas.display.arc({
             x: canvas.width / 2,
@@ -49,23 +62,40 @@ document.addEventListener("DOMContentLoaded", function() {
             lastEnd = end;
         }
         
+        for (let j = 0; j < num_points; ++j) {
+            spawn_random_point();
+        }
+        
         canvas.redraw();
         elem.classList.remove("hide");
         
         document.getElementById("btn-hint").addEventListener("click", function() {
             if (num_tiles > 0) {
                 const rand_idx = 1 + Math.floor(Math.random() * num_tiles);
-                canvas.removeChildAt(rand_idx, true);
+                canvas.removeChildAt(rand_idx, false);
                 num_tiles -= 1;
+                
+                // clear all points
+                for (let j = 0; j < num_points; ++j) {
+                    canvas.removeChildAt(1 + num_tiles, false);
+                }
                 
                 if (num_tiles === 0) {
                     document.getElementById("btn-hint").disabled = true;
                     document.getElementById("btn-sol").disabled = true;
+                } else {
+                    num_points -= 2;
+                    
+                    for (let j = 0; j < num_points; ++j) {
+                        spawn_random_point();
+                    }
                 }
+                
+                canvas.redraw();
             }
         });
         document.getElementById("btn-sol").addEventListener("click", function(){
-            for (let i = 0; i < num_tiles; ++i) {
+            for (let i = 0; i < num_tiles + num_points; ++i) {
                 canvas.removeChildAt(1, false);
             }
             num_tiles = 0;
